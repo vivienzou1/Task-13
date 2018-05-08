@@ -48,22 +48,7 @@ export class DirectionPage {
       //show the route & pannels
       this.loadRoute();
     }
-    // this.geo.getCurrentPosition().then((position) => {
-    //   let latLon = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-    //   console.log(position.coords.latitude + "---" + position.coords.longitude);
-    //   let mapOption = {
-    //     center: latLon,
-    //     zoom: 15,
-    //     mapTypeId: google.maps.MapTypeId.ROADMAP
-    //   };
-    //   //set the map
-    //   this.map = new google.maps.Map(this.mapElement.nativeElement, mapOption);
-    //   //show the route & pannels
-    //   this.loadRoute();
-    //
-    // }, (err) => {
-    //   console.log(err);
-    // });
+
   }
 
   loadRoute() {

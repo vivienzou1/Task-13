@@ -56,10 +56,13 @@ export class nearStopsPage {
       };
       let image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
 
+      //nearby Service
       let service = new google.maps.places.PlacesService(this.map);
       service.nearbySearch(nearByRequest, (res, status) => {
         if (status == google.maps.places.PlacesServiceStatus.OK) {
+          //inforWindowsList
           let tempWindows = [];
+          let tempMarkers = [];
           for (let item of res) {
             let tempMarker = new google.maps.Marker({
               map: this.map,
@@ -70,25 +73,130 @@ export class nearStopsPage {
             let tempInfoWindow = new google.maps.InfoWindow({
               content: item.name
             });
+            tempMarkers.push(tempMarker);
             tempWindows.push(tempInfoWindow);
+          }
+          for (let i = 0, length = tempMarkers.length; i < length; i++) {
+            let tempMarker = tempMarkers[i];
+            let tempInfoWindow = tempWindows[i];
             //set the listener
             google.maps.event.addListener(tempMarker, "click", () => {
+              main.judge = true;
+              //close all inforwindows
+              for (let tempWindow of tempWindows) {
+                tempWindow.close();
+              }
               tempInfoWindow.open(this.map, tempMarker);
+              console.log(tempInfoWindow.content + "-----");
+
+              main.idService.getResults(tempInfoWindow.content).subscribe(data => {
+                let requestList = [];
+                for (let stopId of data["stopIds"]) {
+                  let getTemp = main.idService.getBusResults(stopId);
+                  requestList.push(getTemp);
+                }
+                Observable.forkJoin(requestList)
+                  .subscribe(data => {
+                    let resultMap = [];
+                    for (let dataItem of data) {
+                      let prds = dataItem["bustime-response"]["prd"];
+                      if (prds != null && prds.length > 0) {
+                        let tempBuses = []
+                        let stopId;
+                        let stopName;
+                        for (let prd of prds) {
+                          //find the nearest bus
+                          let tempValue = {
+                            "rt": prd["rt"],
+                            "rtdir": prd["rtdir"],
+                            "stpnm": prd["stpnm"],
+                            "prdctdn": prd["prdctdn"]
+                          }
+                          stopName = prd['stpnm'];
+                          stopId = prd['stpid'];
+                          tempBuses.push(tempValue);
+                        }
+                        let tempRes = {
+                          "stopId": stopId,
+                          "stopName": stopName,
+                          "tempBuses": tempBuses
+                        }
+                        resultMap.push(tempRes);
+                      }
+                    }
+                    main.resultItem = resultMap;
+                    //refresh the pages
+                    main.cd.detectChanges();
+                    console.log(main.resultItem);
+                  });
+              });
             });
+
+
           }
-          //close the inforWindow
+
+          //click the map to close the inforWindow
           google.maps.event.addListener(this.map, "click", () => {
+            //turn to false
+            main.judge = false;
+            //close all inforwindows
             for (let tempWindow of tempWindows) {
               tempWindow.close();
             }
+            //get the whole data
+            let stopIdsArr = localStorage.getItem("stopIds").split(",");
+            //get request buses List
+            let requestList = [];
+            for(let j = 0,len=stopIdsArr.length; j < len; j++) {
+              let getTemp = this.idService.getBusResults(stopIdsArr[j]);
+              requestList.push(getTemp);
+            }
+            Observable.forkJoin(requestList)
+              .subscribe(data => {
+                let resultMap = [];
+                for (let dataItem of data) {
+                  let prds = dataItem["bustime-response"]["prd"];
+                  if (prds != null && prds.length > 0) {
+                    let tempBuses = []
+                    let stopId;
+                    let stopName;
+                    for (let prd of prds) {
+                      //find the nearest bus
+                      let tempValue = {
+                        "rt": prd["rt"],
+                        "rtdir": prd["rtdir"],
+                        "stpnm": prd["stpnm"],
+                        "prdctdn": prd["prdctdn"]
+                      }
+                      stopName = prd['stpnm'];
+                      stopId = prd['stpid'];
+                      tempBuses.push(tempValue);
+                    }
+                    let tempRes = {
+                      "stopId": stopId,
+                      "stopName": stopName,
+                      "tempBuses": tempBuses
+                    }
+                    resultMap.push(tempRes);
+                  }
+                }
+                this.resultItem = resultMap;
+                //refresh the pages
+                this.cd.detectChanges();
+                console.log(this.resultItem);
+              });
           });
         }
       });
 
+      //draw the bottom
       let stopIdsArr = localStorage.getItem("stopIds").split(",");
 
       //set timer
       setInterval(function () {
+        if (main.judge) {
+          return;
+        }
         let requestList = [];
         for(let j = 0,len=stopIdsArr.length; j < len; j++) {
           let getTemp = main.idService.getBusResults(stopIdsArr[j]);

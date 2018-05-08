@@ -113,7 +113,7 @@ var TabsPage = /** @class */ (function () {
         this.tab3Root = __WEBPACK_IMPORTED_MODULE_2__search_search__["a" /* SearchPage */];
     }
     TabsPage = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({template:/*ion-inline-start:"/Users/blutory/Documents/ionicFiles/myApp/src/pages/tabs/tabs.html"*/'<ion-tabs>\n  <ion-tab [root]="tab1Root" tabTitle="Home" tabIcon="home"></ion-tab>\n  <ion-tab [root]="tab2Root" tabTitle="Stops" tabIcon="information-circle"></ion-tab>\n  <ion-tab [root]="tab3Root" tabTitle="Search" tabIcon="contacts"></ion-tab>\n</ion-tabs>\n'/*ion-inline-end:"/Users/blutory/Documents/ionicFiles/myApp/src/pages/tabs/tabs.html"*/
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({template:/*ion-inline-start:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/pages/tabs/tabs.html"*/'<ion-tabs>\n  <ion-tab [root]="tab1Root" tabTitle="Home" tabIcon="home"></ion-tab>\n  <ion-tab [root]="tab2Root" tabTitle="Stops" tabIcon="information-circle"></ion-tab>\n  <ion-tab [root]="tab3Root" tabTitle="Search" tabIcon="contacts"></ion-tab>\n</ion-tabs>\n'/*ion-inline-end:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/pages/tabs/tabs.html"*/
         }),
         __metadata("design:paramtypes", [])
     ], TabsPage);
@@ -189,11 +189,15 @@ var nearStopsPage = /** @class */ (function () {
                 type: ['bus_station']
             };
             var image_1 = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+            //nearby Service
             var service = new google.maps.places.PlacesService(this.map);
             service.nearbySearch(nearByRequest, function (res, status) {
                 if (status == google.maps.places.PlacesServiceStatus.OK) {
+                    //inforWindowsList
                     var tempWindows_1 = [];
-                    var _loop_1 = function (item) {
+                    var tempMarkers = [];
+                    for (var _i = 0, res_1 = res; _i < res_1.length; _i++) {
+                        var item = res_1[_i];
                         var tempMarker = new google.maps.Marker({
                             map: _this.map,
                             position: item.geometry.location,
@@ -203,28 +207,134 @@ var nearStopsPage = /** @class */ (function () {
                         var tempInfoWindow = new google.maps.InfoWindow({
                             content: item.name
                         });
+                        tempMarkers.push(tempMarker);
                         tempWindows_1.push(tempInfoWindow);
+                    }
+                    var _loop_1 = function (i, length_1) {
+                        var tempMarker = tempMarkers[i];
+                        var tempInfoWindow = tempWindows_1[i];
                         //set the listener
                         google.maps.event.addListener(tempMarker, "click", function () {
+                            main.judge = true;
+                            //close all inforwindows
+                            for (var _i = 0, tempWindows_2 = tempWindows_1; _i < tempWindows_2.length; _i++) {
+                                var tempWindow = tempWindows_2[_i];
+                                tempWindow.close();
+                            }
                             tempInfoWindow.open(_this.map, tempMarker);
+                            console.log(tempInfoWindow.content + "-----");
+                            main.idService.getResults(tempInfoWindow.content).subscribe(function (data) {
+                                var requestList = [];
+                                for (var _i = 0, _a = data["stopIds"]; _i < _a.length; _i++) {
+                                    var stopId = _a[_i];
+                                    var getTemp = main.idService.getBusResults(stopId);
+                                    requestList.push(getTemp);
+                                }
+                                __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__["Observable"].forkJoin(requestList)
+                                    .subscribe(function (data) {
+                                    var resultMap = [];
+                                    for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
+                                        var dataItem = data_1[_i];
+                                        var prds = dataItem["bustime-response"]["prd"];
+                                        if (prds != null && prds.length > 0) {
+                                            var tempBuses = [];
+                                            var stopId = void 0;
+                                            var stopName = void 0;
+                                            for (var _a = 0, prds_1 = prds; _a < prds_1.length; _a++) {
+                                                var prd = prds_1[_a];
+                                                //find the nearest bus
+                                                var tempValue = {
+                                                    "rt": prd["rt"],
+                                                    "rtdir": prd["rtdir"],
+                                                    "stpnm": prd["stpnm"],
+                                                    "prdctdn": prd["prdctdn"]
+                                                };
+                                                stopName = prd['stpnm'];
+                                                stopId = prd['stpid'];
+                                                tempBuses.push(tempValue);
+                                            }
+                                            var tempRes = {
+                                                "stopId": stopId,
+                                                "stopName": stopName,
+                                                "tempBuses": tempBuses
+                                            };
+                                            resultMap.push(tempRes);
+                                        }
+                                    }
+                                    main.resultItem = resultMap;
+                                    //refresh the pages
+                                    main.cd.detectChanges();
+                                    console.log(main.resultItem);
+                                });
+                            });
                         });
                     };
-                    for (var _i = 0, res_1 = res; _i < res_1.length; _i++) {
-                        var item = res_1[_i];
-                        _loop_1(item);
+                    for (var i = 0, length_1 = tempMarkers.length; i < length_1; i++) {
+                        _loop_1(i, length_1);
                     }
-                    //close the inforWindow
+                    //click the map to close the inforWindow
                     google.maps.event.addListener(_this.map, "click", function () {
-                        for (var _i = 0, tempWindows_2 = tempWindows_1; _i < tempWindows_2.length; _i++) {
-                            var tempWindow = tempWindows_2[_i];
+                        //turn to false
+                        main.judge = false;
+                        //close all inforwindows
+                        for (var _i = 0, tempWindows_3 = tempWindows_1; _i < tempWindows_3.length; _i++) {
+                            var tempWindow = tempWindows_3[_i];
                             tempWindow.close();
                         }
+                        //get the whole data
+                        var stopIdsArr = localStorage.getItem("stopIds").split(",");
+                        //get request buses List
+                        var requestList = [];
+                        for (var j = 0, len = stopIdsArr.length; j < len; j++) {
+                            var getTemp = _this.idService.getBusResults(stopIdsArr[j]);
+                            requestList.push(getTemp);
+                        }
+                        __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__["Observable"].forkJoin(requestList)
+                            .subscribe(function (data) {
+                            var resultMap = [];
+                            for (var _i = 0, data_2 = data; _i < data_2.length; _i++) {
+                                var dataItem = data_2[_i];
+                                var prds = dataItem["bustime-response"]["prd"];
+                                if (prds != null && prds.length > 0) {
+                                    var tempBuses = [];
+                                    var stopId = void 0;
+                                    var stopName = void 0;
+                                    for (var _a = 0, prds_2 = prds; _a < prds_2.length; _a++) {
+                                        var prd = prds_2[_a];
+                                        //find the nearest bus
+                                        var tempValue = {
+                                            "rt": prd["rt"],
+                                            "rtdir": prd["rtdir"],
+                                            "stpnm": prd["stpnm"],
+                                            "prdctdn": prd["prdctdn"]
+                                        };
+                                        stopName = prd['stpnm'];
+                                        stopId = prd['stpid'];
+                                        tempBuses.push(tempValue);
+                                    }
+                                    var tempRes = {
+                                        "stopId": stopId,
+                                        "stopName": stopName,
+                                        "tempBuses": tempBuses
+                                    };
+                                    resultMap.push(tempRes);
+                                }
+                            }
+                            _this.resultItem = resultMap;
+                            //refresh the pages
+                            _this.cd.detectChanges();
+                            console.log(_this.resultItem);
+                        });
                     });
                 }
             });
+            //draw the bottom
             var stopIdsArr_1 = localStorage.getItem("stopIds").split(",");
             //set timer
             setInterval(function () {
+                if (main.judge) {
+                    return;
+                }
                 var requestList = [];
                 for (var j = 0, len = stopIdsArr_1.length; j < len; j++) {
                     var getTemp = main.idService.getBusResults(stopIdsArr_1[j]);
@@ -233,15 +343,15 @@ var nearStopsPage = /** @class */ (function () {
                 __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__["Observable"].forkJoin(requestList)
                     .subscribe(function (data) {
                     var resultMap = [];
-                    for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
-                        var dataItem = data_1[_i];
+                    for (var _i = 0, data_3 = data; _i < data_3.length; _i++) {
+                        var dataItem = data_3[_i];
                         var prds = dataItem["bustime-response"]["prd"];
                         if (prds != null && prds.length > 0) {
                             var tempBuses = [];
                             var stopId = void 0;
                             var stopName = void 0;
-                            for (var _a = 0, prds_1 = prds; _a < prds_1.length; _a++) {
-                                var prd = prds_1[_a];
+                            for (var _a = 0, prds_3 = prds; _a < prds_3.length; _a++) {
+                                var prd = prds_3[_a];
                                 //find the nearest bus
                                 var tempValue = {
                                     "rt": prd["rt"],
@@ -266,7 +376,7 @@ var nearStopsPage = /** @class */ (function () {
                     main.cd.detectChanges();
                     console.log(main.resultItem);
                 });
-            }, 8 * 1000);
+            }, 30 * 1000);
             //get request buses List
             var requestList = [];
             for (var j = 0, len = stopIdsArr_1.length; j < len; j++) {
@@ -276,15 +386,15 @@ var nearStopsPage = /** @class */ (function () {
             __WEBPACK_IMPORTED_MODULE_4_rxjs_Observable__["Observable"].forkJoin(requestList)
                 .subscribe(function (data) {
                 var resultMap = [];
-                for (var _i = 0, data_2 = data; _i < data_2.length; _i++) {
-                    var dataItem = data_2[_i];
+                for (var _i = 0, data_4 = data; _i < data_4.length; _i++) {
+                    var dataItem = data_4[_i];
                     var prds = dataItem["bustime-response"]["prd"];
                     if (prds != null && prds.length > 0) {
                         var tempBuses = [];
                         var stopId = void 0;
                         var stopName = void 0;
-                        for (var _a = 0, prds_2 = prds; _a < prds_2.length; _a++) {
-                            var prd = prds_2[_a];
+                        for (var _a = 0, prds_4 = prds; _a < prds_4.length; _a++) {
+                            var prd = prds_4[_a];
                             //find the nearest bus
                             var tempValue = {
                                 "rt": prd["rt"],
@@ -313,16 +423,15 @@ var nearStopsPage = /** @class */ (function () {
     };
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_8" /* ViewChild */])("map2"),
-        __metadata("design:type", typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */]) === "function" && _a || Object)
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */])
     ], nearStopsPage.prototype, "mapElement", void 0);
     nearStopsPage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-nearStops',template:/*ion-inline-start:"/Users/blutory/Documents/ionicFiles/myApp/src/pages/nearStops/nearStops.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>\n      Bus Stops\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <div #map2 id="map2"></div>\n  <div class="nearbyList">\n    <ion-list *ngIf="resultItem">\n      <ion-item class="itemResult" *ngFor="let res of resultItem">\n        <h4>{{ res.stopId }} &nbsp;{{ res.stopName }}</h4>\n        <ion-item  class="itemBus" *ngFor="let bus of res.tempBuses">\n          <h4>{{ bus.rt }}</h4>\n          <h4><ion-icon name="arrow-dropright-circle"></ion-icon>&nbsp;{{ bus.rtdir }}</h4>\n          <ion-note item-right class="note">\n            <h3>{{ bus.prdctdn }}</h3>\n            <h3>minutes</h3>\n          </ion-note>\n        </ion-item>\n      </ion-item>\n    </ion-list>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/Users/blutory/Documents/ionicFiles/myApp/src/pages/nearStops/nearStops.html"*/
+            selector: 'page-nearStops',template:/*ion-inline-start:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/pages/nearStops/nearStops.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>\n      Bus Stops\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <div #map2 id="map2"></div>\n  <div class="nearbyList">\n    <ion-list *ngIf="resultItem">\n      <ion-item class="itemResult" *ngFor="let res of resultItem">\n        <h4>{{ res.stopId }} &nbsp;{{ res.stopName }}</h4>\n        <ion-item  class="itemBus" *ngFor="let bus of res.tempBuses">\n          <h4>{{ bus.rt }}</h4>\n          <h4><ion-icon name="arrow-dropright-circle"></ion-icon>&nbsp;{{ bus.rtdir }}</h4>\n          <ion-note item-right class="note">\n            <h3>{{ bus.prdctdn }}</h3>\n            <h3>minutes</h3>\n          </ion-note>\n        </ion-item>\n      </ion-item>\n    </ion-list>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/pages/nearStops/nearStops.html"*/
         }),
-        __metadata("design:paramtypes", [typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* NavController */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__app_services_getBusId__["a" /* busIdsService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__app_services_getBusId__["a" /* busIdsService */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */]) === "function" && _d || Object])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* NavController */], __WEBPACK_IMPORTED_MODULE_2__app_services_getBusId__["a" /* busIdsService */], __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */]])
     ], nearStopsPage);
     return nearStopsPage;
-    var _a, _b, _c, _d;
 }());
 
 //# sourceMappingURL=nearStops.js.map
@@ -387,7 +496,7 @@ var SearchPage = /** @class */ (function () {
     };
     SearchPage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-search',template:/*ion-inline-start:"/Users/blutory/Documents/ionicFiles/myApp/src/pages/search/search.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>Search</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <!--submit the form-->\n  <form (submit) = "setOriginAndDestination()">\n  <ion-list>\n    <!--originInput-->\n    <ion-item>\n      <ion-label floating>Origin</ion-label>\n      <ion-input #originInput type="text"  id="originInput"></ion-input>\n    </ion-item>\n    <!--destinationInput-->\n    <ion-item>\n    <ion-label floating>Destination</ion-label>\n    <ion-input #destinationInput type="text"  id="destinationInput"></ion-input>\n    </ion-item>\n    <!---->\n    <!--<ion-item>-->\n      <!--<ion-label fixed>RoutingPreference</ion-label>-->\n      <!--<ion-select [(ngModel)]="preference" name="preference">-->\n        <!--<ion-option value="FEWER_TRANSFERS">fewer transfers</ion-option>-->\n        <!--<ion-option value="LESS_WALKING">Less walking</ion-option>-->\n      <!--</ion-select>-->\n    <!--</ion-item>-->\n  </ion-list>\n  <button ion-button type="submit"  block>submit</button>\n  </form>\n</ion-content>\n'/*ion-inline-end:"/Users/blutory/Documents/ionicFiles/myApp/src/pages/search/search.html"*/
+            selector: 'page-search',template:/*ion-inline-start:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/pages/search/search.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>Search</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <!--submit the form-->\n  <form (submit) = "setOriginAndDestination()">\n  <ion-list>\n    <!--originInput-->\n    <ion-item>\n      <ion-label floating>Origin</ion-label>\n      <ion-input #originInput type="text"  id="originInput"></ion-input>\n    </ion-item>\n    <!--destinationInput-->\n    <ion-item>\n    <ion-label floating>Destination</ion-label>\n    <ion-input #destinationInput type="text"  id="destinationInput"></ion-input>\n    </ion-item>\n    <!---->\n    <!--<ion-item>-->\n      <!--<ion-label fixed>RoutingPreference</ion-label>-->\n      <!--<ion-select [(ngModel)]="preference" name="preference">-->\n        <!--<ion-option value="FEWER_TRANSFERS">fewer transfers</ion-option>-->\n        <!--<ion-option value="LESS_WALKING">Less walking</ion-option>-->\n      <!--</ion-select>-->\n    <!--</ion-item>-->\n  </ion-list>\n  <button ion-button type="submit"  block>submit</button>\n  </form>\n</ion-content>\n'/*ion-inline-end:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/pages/search/search.html"*/
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* NavController */]])
     ], SearchPage);
@@ -445,22 +554,6 @@ var DirectionPage = /** @class */ (function () {
             //show the route & pannels
             this.loadRoute();
         }
-        // this.geo.getCurrentPosition().then((position) => {
-        //   let latLon = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-        //   console.log(position.coords.latitude + "---" + position.coords.longitude);
-        //   let mapOption = {
-        //     center: latLon,
-        //     zoom: 15,
-        //     mapTypeId: google.maps.MapTypeId.ROADMAP
-        //   };
-        //   //set the map
-        //   this.map = new google.maps.Map(this.mapElement.nativeElement, mapOption);
-        //   //show the route & pannels
-        //   this.loadRoute();
-        //
-        // }, (err) => {
-        //   console.log(err);
-        // });
     };
     DirectionPage.prototype.loadRoute = function () {
         var directionRenderer = new google.maps.DirectionsRenderer;
@@ -496,7 +589,7 @@ var DirectionPage = /** @class */ (function () {
     ], DirectionPage.prototype, "navigationElement", void 0);
     DirectionPage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-direction',template:/*ion-inline-start:"/Users/blutory/Documents/ionicFiles/myApp/src/pages/direction/direction.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>\n      Direction\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <!--show the map-->\n  <div #map id="map"></div>\n  <!--show the route -->\n  <div #navigation></div>\n</ion-content>\n'/*ion-inline-end:"/Users/blutory/Documents/ionicFiles/myApp/src/pages/direction/direction.html"*/
+            selector: 'page-direction',template:/*ion-inline-start:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/pages/direction/direction.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>\n      Direction\n    </ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content padding>\n  <!--show the map-->\n  <div #map id="map"></div>\n  <!--show the route -->\n  <div #navigation></div>\n</ion-content>\n'/*ion-inline-end:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/pages/direction/direction.html"*/
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* NavController */], __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["e" /* NavParams */], __WEBPACK_IMPORTED_MODULE_2__ionic_native_geolocation__["a" /* Geolocation */]])
     ], DirectionPage);
@@ -740,16 +833,15 @@ var HomePage = /** @class */ (function () {
     };
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_8" /* ViewChild */])("map"),
-        __metadata("design:type", typeof (_a = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */]) === "function" && _a || Object)
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["t" /* ElementRef */])
     ], HomePage.prototype, "mapElement", void 0);
     HomePage = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({
-            selector: 'page-home',template:/*ion-inline-start:"/Users/blutory/Documents/ionicFiles/myApp/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>Home</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <!--show the map-->\n  <div #map id="map"></div>\n  <div>\n    <ion-list *ngIf="resultItem">\n      <ion-item class="itemBus" *ngFor="let res of resultItem">\n        <h1>{{ res.rt }}</h1>\n        <h3><ion-icon name="arrow-dropright-circle"></ion-icon>&nbsp;{{ res.rtdir }}</h3>\n        <span>{{ res.stpnm }}</span>\n        <ion-note item-right class="note">\n          <h2>{{ res.prdctdn }}</h2>\n          <h3>minutes</h3>\n        </ion-note>\n      </ion-item>\n    </ion-list>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/Users/blutory/Documents/ionicFiles/myApp/src/pages/home/home.html"*/
+            selector: 'page-home',template:/*ion-inline-start:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/pages/home/home.html"*/'<ion-header>\n  <ion-navbar>\n    <ion-title>Home</ion-title>\n  </ion-navbar>\n</ion-header>\n\n<ion-content>\n  <!--show the map-->\n  <div #map id="map"></div>\n  <div>\n    <ion-list *ngIf="resultItem">\n      <ion-item class="itemBus" *ngFor="let res of resultItem">\n        <h1>{{ res.rt }}</h1>\n        <h3><ion-icon name="arrow-dropright-circle"></ion-icon>&nbsp;{{ res.rtdir }}</h3>\n        <span>{{ res.stpnm }}</span>\n        <ion-note item-right class="note">\n          <h2>{{ res.prdctdn }}</h2>\n          <h3>minutes</h3>\n        </ion-note>\n      </ion-item>\n    </ion-list>\n  </div>\n</ion-content>\n'/*ion-inline-end:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/pages/home/home.html"*/
         }),
-        __metadata("design:paramtypes", [typeof (_b = typeof __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* NavController */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* NavController */]) === "function" && _b || Object, typeof (_c = typeof __WEBPACK_IMPORTED_MODULE_2__ionic_native_geolocation__["a" /* Geolocation */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_2__ionic_native_geolocation__["a" /* Geolocation */]) === "function" && _c || Object, typeof (_d = typeof __WEBPACK_IMPORTED_MODULE_3__app_services_getBusId__["a" /* busIdsService */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_3__app_services_getBusId__["a" /* busIdsService */]) === "function" && _d || Object, typeof (_e = typeof __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */] !== "undefined" && __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */]) === "function" && _e || Object])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["d" /* NavController */], __WEBPACK_IMPORTED_MODULE_2__ionic_native_geolocation__["a" /* Geolocation */], __WEBPACK_IMPORTED_MODULE_3__app_services_getBusId__["a" /* busIdsService */], __WEBPACK_IMPORTED_MODULE_0__angular_core__["j" /* ChangeDetectorRef */]])
     ], HomePage);
     return HomePage;
-    var _a, _b, _c, _d, _e;
 }());
 
 //# sourceMappingURL=home.js.map
@@ -890,7 +982,7 @@ var MyApp = /** @class */ (function () {
         });
     }
     MyApp = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({template:/*ion-inline-start:"/Users/blutory/Documents/ionicFiles/myApp/src/app/app.html"*/'<ion-nav [root]="rootPage"></ion-nav>\n'/*ion-inline-end:"/Users/blutory/Documents/ionicFiles/myApp/src/app/app.html"*/,
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["m" /* Component */])({template:/*ion-inline-start:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/app/app.html"*/'<ion-nav [root]="rootPage"></ion-nav>\n'/*ion-inline-end:"/Users/blutory/Documents/Ebiz_Classes/Task-13/src/app/app.html"*/,
             providers: [__WEBPACK_IMPORTED_MODULE_4__services_nearby__["a" /* nearBySerivce */], __WEBPACK_IMPORTED_MODULE_6__services_getBusId__["a" /* busIdsService */]]
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1_ionic_angular__["f" /* Platform */], __WEBPACK_IMPORTED_MODULE_2__ionic_native_status_bar__["a" /* StatusBar */], __WEBPACK_IMPORTED_MODULE_3__ionic_native_splash_screen__["a" /* SplashScreen */]])

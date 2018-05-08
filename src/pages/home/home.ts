@@ -140,7 +140,7 @@ export class HomePage {
                     //refresh the page
                     main.cd.detectChanges();
                   });
-              }, 30 * 1000);
+              }, 8 * 1000);
 
               //get request buses List
               let requestList = [];
