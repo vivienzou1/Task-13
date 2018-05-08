@@ -1,0 +1,14 @@
+page-direction {
+  #map {
+    height: 100%;
+    width: 100%;
+    overflow: scroll;
+    margin: 0 auto;
+  }
+  ion-card {
+    width: 100%;
+    overflow: scroll;
+    //position: absolute;
+    //z-index: 1;
+  }
+}

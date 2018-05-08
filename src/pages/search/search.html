@@ -1,0 +1,32 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Search</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <!--submit the form-->
+  <form (submit) = "setOriginAndDestination()">
+  <ion-list>
+    <!--originInput-->
+    <ion-item>
+      <ion-label floating>Origin</ion-label>
+      <ion-input #originInput type="text"  id="originInput"></ion-input>
+    </ion-item>
+    <!--destinationInput-->
+    <ion-item>
+    <ion-label floating>Destination</ion-label>
+    <ion-input #destinationInput type="text"  id="destinationInput"></ion-input>
+    </ion-item>
+    <!---->
+    <!--<ion-item>-->
+      <!--<ion-label fixed>RoutingPreference</ion-label>-->
+      <!--<ion-select [(ngModel)]="preference" name="preference">-->
+        <!--<ion-option value="FEWER_TRANSFERS">fewer transfers</ion-option>-->
+        <!--<ion-option value="LESS_WALKING">Less walking</ion-option>-->
+      <!--</ion-select>-->
+    <!--</ion-item>-->
+  </ion-list>
+  <button ion-button type="submit"  block>submit</button>
+  </form>
+</ion-content>
