@@ -1,10 +1,7 @@
 # Task-13
 
 
-#### Introduction
-
-
-# This project contains serveral pages:
+#### This project contains several pages:
 1) Home Page: 
 	a. This page will show the map and mark the current location of the user.
    	b. This page will show the prediction concern the incoming buses. The prediction list is sorted based on the distance between the bus stop & user location.
