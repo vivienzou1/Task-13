@@ -3,7 +3,6 @@
 
 #### Introduction
 
-# This project is based on the SprintBoot combining the Spring Security, Spring Data Jpa and Thymeleaf.
 
 # This project contains serveral pages:
 1) Home Page: 
