@@ -128,7 +128,7 @@ export class nearStopsPage {
             main.cd.detectChanges();
             console.log(main.resultItem);
           });
-      }, 8 * 1000);
+      }, 30 * 1000);
 
       //get request buses List
       let requestList = [];
