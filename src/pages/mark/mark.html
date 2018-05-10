@@ -1,0 +1,50 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Mark
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+    <ion-list>
+      <ion-item>
+      <h4 class="titleFont">My Marks</h4>
+      </ion-item>
+
+
+    <ion-item *ngFor="let location of marksLocation">
+      <ion-note item-left>
+        <ion-icon md="md-home"></ion-icon>
+      </ion-note>
+      <h2>&nbsp;{{ location.title }} </h2>
+      <h3 class="name"> &nbsp;{{ location.name }} </h3>
+      <ion-note item-right >
+        <button (click)="locationSelected(location)"> Edit </button>
+      </ion-note>
+    </ion-item>
+
+        <button ion-item (click)="addLocation()" class="button">Add Location...</button>
+    </ion-list>
+
+
+  <ion-list class="list2">
+    <ion-item>
+      <h4 class="titleFont">My Transit Lines</h4>
+    </ion-item>
+    <ion-item class="listItem">
+      <span class="spanFont">71D</span>
+      <ion-note item-right>
+        <ion-icon ios="ios-star" md="md-star"></ion-icon>
+      </ion-note>
+    </ion-item>
+    <ion-item class="listItem">
+      <span class="spanFont">71D</span>
+      <ion-note item-right>
+        <ion-icon ios="ios-star" md="md-star"></ion-icon>
+      </ion-note>
+    </ion-item>
+
+  </ion-list>
+</ion-content>

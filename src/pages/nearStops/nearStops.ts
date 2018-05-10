@@ -54,8 +54,15 @@ export class nearStopsPage {
         //radius: '400',
         type: ['bus_station']
       };
-      let image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
-
+      //let image = 'https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png';
+      //let image = "../../assets/icon/bus.png";
+      let image = {
+        url: "../../assets/icon/bus.png",
+        size: new google.maps.Size(25, 40),
+        origin: new google.maps.Point(0, 0),
+        anchor: new google.maps.Point(12, 21),
+        scaledSize: new google.maps.Size(22, 22)
+      };
       //nearby Service
       let service = new google.maps.places.PlacesService(this.map);
       service.nearbySearch(nearByRequest, (res, status) => {
@@ -110,7 +117,8 @@ export class nearStopsPage {
                             "rt": prd["rt"],
                             "rtdir": prd["rtdir"],
                             "stpnm": prd["stpnm"],
-                            "prdctdn": prd["prdctdn"]
+                            "prdctdn": prd["prdctdn"],
+                            "des": prd["des"].toUpperCase()
                           }
                           stopName = prd['stpnm'];
                           stopId = prd['stpid'];
@@ -166,7 +174,8 @@ export class nearStopsPage {
                         "rt": prd["rt"],
                         "rtdir": prd["rtdir"],
                         "stpnm": prd["stpnm"],
-                        "prdctdn": prd["prdctdn"]
+                        "prdctdn": prd["prdctdn"],
+                        "des": prd["des"].toUpperCase()
                       }
                       stopName = prd['stpnm'];
                       stopId = prd['stpid'];
@@ -217,7 +226,8 @@ export class nearStopsPage {
                     "rt": prd["rt"],
                     "rtdir": prd["rtdir"],
                     "stpnm": prd["stpnm"],
-                    "prdctdn": prd["prdctdn"]
+                    "prdctdn": prd["prdctdn"],
+                    "des": prd["des"].toUpperCase()
                   }
                   stopName = prd['stpnm'];
                   stopId = prd['stpid'];
@@ -259,7 +269,8 @@ export class nearStopsPage {
                   "rt": prd["rt"],
                   "rtdir": prd["rtdir"],
                   "stpnm": prd["stpnm"],
-                  "prdctdn": prd["prdctdn"]
+                  "prdctdn": prd["prdctdn"],
+                  "des": prd["des"].toUpperCase()
                 }
                 stopName = prd['stpnm'];
                 stopId = prd['stpid'];

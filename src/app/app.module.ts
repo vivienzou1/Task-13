@@ -11,7 +11,9 @@ import { Geolocation } from '@ionic-native/geolocation';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { DirectionPage } from '../pages/direction/direction';
+import { MarkPage } from '../pages/mark/mark';
 import { HttpModule } from '@angular/http';
+import { AddLocationPage } from "../pages/addLocation/addLocation";
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import { HttpModule } from '@angular/http';
     SearchPage,
     HomePage,
     TabsPage,
-    DirectionPage
+    DirectionPage,
+    MarkPage,
+    AddLocationPage
   ],
   imports: [
     BrowserModule,
@@ -34,7 +38,9 @@ import { HttpModule } from '@angular/http';
     SearchPage,
     HomePage,
     TabsPage,
-    DirectionPage
+    DirectionPage,
+    MarkPage,
+    AddLocationPage
   ],
   providers: [
     StatusBar,

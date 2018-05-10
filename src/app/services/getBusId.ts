@@ -9,8 +9,10 @@ export class busIdsService {
   baseUrl2: any;
 
   constructor(public http:Http){
-    this.baseUrl = "http://127.0.0.1:5000/getBusStopIds";
+    //this.baseUrl = "http://127.0.0.1:5000/getBusStopIds";
+    this.baseUrl = "http://ec2-54-172-140-42.compute-1.amazonaws.com:5000/getBusStopIds";
     this.baseUrl2 = "http://realtime.portauthority.org/bustime/api/v2/getpredictions?key=rEn9KzMCKtNEYfEbGucMDfRUr&format=json&localestring=en_US&stpid=";
+    //this.baseUrl2 = "http://realtime.portauthority.org/bustime/api/v2/getpredictions?key=sa9PrTQzmvKqNZmWJvPX9ykmR&format=json&localestring=en_US&stpid=";
   }
 
 

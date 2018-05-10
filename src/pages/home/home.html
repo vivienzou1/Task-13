@@ -11,7 +11,7 @@
     <ion-list *ngIf="resultItem">
       <ion-item class="itemBus" *ngFor="let res of resultItem">
         <h1>{{ res.rt }}</h1>
-        <h3><ion-icon name="arrow-dropright-circle"></ion-icon>&nbsp;{{ res.rtdir }}</h3>
+        <h3><ion-icon name="arrow-dropright-circle"></ion-icon>&nbsp;{{ res.rtdir }} {{ res.des }}</h3>
         <span>{{ res.stpnm }}</span>
         <ion-note item-right class="note">
           <h2>{{ res.prdctdn }}</h2>

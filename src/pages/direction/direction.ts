@@ -48,7 +48,6 @@ export class DirectionPage {
       //show the route & pannels
       this.loadRoute();
     }
-
   }
 
   loadRoute() {

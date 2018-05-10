@@ -14,7 +14,7 @@
         <h4>{{ res.stopId }} &nbsp;{{ res.stopName }}</h4>
         <ion-item  class="itemBus" *ngFor="let bus of res.tempBuses">
           <h4>{{ bus.rt }}</h4>
-          <h4><ion-icon name="arrow-dropright-circle"></ion-icon>&nbsp;{{ bus.rtdir }}</h4>
+          <h4><ion-icon name="arrow-dropright-circle"></ion-icon>&nbsp;{{ bus.rtdir }} {{ bus.des }}</h4>
           <ion-note item-right class="note">
             <h3>{{ bus.prdctdn }}</h3>
             <h3>minutes</h3>

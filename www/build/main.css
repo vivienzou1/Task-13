@@ -25678,6 +25678,11 @@ ion-navbar.toolbar {
   min-height: calc(46px + env(safe-area-inset-bottom));
 }
 
+page-addLocation #map {
+  height: 80%;
+  width: 100%;
+}
+
 page-direction #map {
   height: 100%;
   width: 100%;
@@ -25708,6 +25713,44 @@ page-home .itemBus {
   color: #f4f4f4;
 }
 
+page-mark #map {
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+  margin: 0 auto;
+}
+
+page-mark ion-card {
+  width: 100%;
+  overflow: scroll;
+}
+
+page-mark .button {
+  font-size: 16px;
+}
+
+page-mark .list2 {
+  margin-top: 20px;
+}
+
+page-mark .listItem {
+  background: #488aff;
+  color: white;
+  margin-bottom: 3px;
+}
+
+page-mark .name {
+  color: gray;
+}
+
+page-mark .titleFont {
+  font-weight: 500;
+}
+
+page-mark .spanFont {
+  font-weight: 900;
+}
+
 page-nearStops #map2 {
   width: 100%;
   height: 60%;
@@ -25735,4 +25778,27 @@ page-nearStops .itemBus {
   width: 100%;
   background-color: #488aff;
   color: #f4f4f4;
+}
+
+page-search .searchHistory {
+  margin-top: 40px;
+}
+
+page-search .formClass {
+  width: 97%;
+  margin: 0 auto;
+}
+
+page-search .select {
+  margin-left: 50px;
+}
+
+page-search .trueStyle {
+  background-color: white;
+  color: black;
+}
+
+page-search .falseStyle {
+  background-color: white;
+  color: black;
 }
