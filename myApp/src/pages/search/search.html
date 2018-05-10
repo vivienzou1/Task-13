@@ -1,0 +1,39 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Search</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <!--submit the form-->
+  <form (submit) = "setOriginAndDestination()" class="formClass">
+  <ion-list>
+    <!--originInput-->
+    <ion-item>
+       <ion-input #originInput type="text"  id="originInput" (click) = "enableOriginInput()" [(ngModel)] = "originValue" name="originValue"  placeholder="Origin"
+                  [ngClass]="{ true : 'trueStyle',false: 'falseStyle'}[className]"></ion-input>
+    </ion-item>
+    <!--destinationInput-->
+    <ion-item>
+     <ion-input #destinationInputView type="text"  id="destinationInput"  (click) = "enableDestinationInput()" [(ngModel)] = "destinationValue" name="destinationValue" placeholder="Destination" ></ion-input>
+    </ion-item>
+    <!--preference-->
+    <ion-item>
+      <ion-label fixed>Preference</ion-label>
+      <ion-select [(ngModel)]="preference" name="preference" class="select" (ionChange)="onChange()">
+        <ion-option value="FEWER_TRANSFERS" >fewer transfers</ion-option>
+        <ion-option value="LESS_WALKING">Less walking</ion-option>
+      </ion-select>
+    </ion-item>
+  </ion-list>
+  <button ion-button type="submit"  block>submit</button>
+  </form>
+   <ion-list *ngIf="recentSearchResult" class="searchHistory">
+     <ion-list-header>
+       Recent Searches
+     </ion-list-header>
+     <button ion-item *ngFor="let item of recentSearchResult" (click)="itemSelected(item)">
+      {{ item.name }}
+    </button>
+   </ion-list>
+</ion-content>

@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Add Location
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content padding>
+  <!--show the map-->
+  <div #locationInput>
+    <ion-input  type="text"  id="locationInput" placeholder="Location" class="locationInput"></ion-input>
+  </div>
+  <!--<div #map id="map"></div>-->
+  <div>
+    <button ion-button  (click)="saveLocation()" block>Save This Location</button>
+  </div>
+</ion-content>

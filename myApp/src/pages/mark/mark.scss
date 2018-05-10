@@ -1,0 +1,38 @@
+page-mark {
+  #map {
+    height: 100%;
+    width: 100%;
+    overflow: scroll;
+    margin: 0 auto;
+  }
+  ion-card {
+    width: 100%;
+    overflow: scroll;
+    //position: absolute;
+    //z-index: 1;
+  }
+
+  .button {
+    font-size: 16px;
+  }
+
+  .list2 {
+    margin-top: 20px;
+  }
+
+  .listItem {
+    background: #488aff;
+    color: white;
+    margin-bottom: 3px;
+  }
+  .name {
+    color: gray;
+  }
+
+  .titleFont {
+    font-weight: 500;
+  }
+  .spanFont {
+    font-weight: 900;
+  }
+}

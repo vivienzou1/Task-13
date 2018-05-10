@@ -1,0 +1,29 @@
+page-nearStops{
+  #map2 {
+    width: 100%;
+    height: 60%;
+    overflow: scroll;
+    margin: 0 auto;
+  }
+
+  .note {
+    text-align: center;
+    color: #f4f4f4;
+
+  }
+  .nearbyList {
+    margin-top: 20px;
+  }
+
+  .itemResult {
+    width: 99%;
+    background-color: #488aff;
+    color: #f4f4f4;
+    margin-bottom: 2px;
+  }
+  .itemBus {
+    width: 100%;
+    background-color: #488aff;
+    color: #f4f4f4;
+  }
+}

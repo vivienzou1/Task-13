@@ -5,32 +5,19 @@
 </ion-header>
 
 <ion-content>
-  <!--add the marker -->
-  <div id="markerButton">
-    <ion-buttons>
-      <button ion-button (click)="addMarker()" block><ion-icon name="add"></ion-icon>Add Marker</button>
-    </ion-buttons>
-  </div>
-  <!--submit the form-->
-  <form (submit) = "setOriginAndDestination()">
-    <ion-list>
-      <ion-item>
-        <ion-label floating>Origin</ion-label>
-        <ion-input type="text" [(ngModel)] = "originName" name="originName"></ion-input>
-      </ion-item>
-      <ion-item>
-        <ion-label floating>Destination</ion-label>
-        <ion-input type="text" [(ngModel)] = "destinationName" name="destinationName"></ion-input>
-      </ion-item>
-    </ion-list>
-    <button ion-button type="submit"  block>submit</button>
-  </form>
-  <!--shot the route -->
-  <ion-card>
-    <ion-card-content>
-      <div #navigation></div>
-    </ion-card-content>
-  </ion-card>
   <!--show the map-->
   <div #map id="map"></div>
+  <div>
+    <ion-list *ngIf="resultItem">
+      <ion-item class="itemBus" *ngFor="let res of resultItem">
+        <h1>{{ res.rt }}</h1>
+        <h3><ion-icon name="arrow-dropright-circle"></ion-icon>&nbsp;{{ res.rtdir }} {{ res.des }}</h3>
+        <span>{{ res.stpnm }}</span>
+        <ion-note item-right class="note">
+          <h2>{{ res.prdctdn }}</h2>
+          <h3>minutes</h3>
+        </ion-note>
+      </ion-item>
+    </ion-list>
+  </div>
 </ion-content>
